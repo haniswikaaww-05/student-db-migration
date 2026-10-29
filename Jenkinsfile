@@ -9,12 +9,12 @@ pipeline {
             }
         }
 
-        stage('Check Docker') {
-            steps {
-                bat 'docker --version'
-                bat 'docker compose version'
-            }
-        }
+       
+stage('Check Docker') {
+    steps {
+        bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" --version'
+    }
+}
 
         stage('Start MySQL') {
             steps {

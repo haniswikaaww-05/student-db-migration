@@ -1,0 +1,28 @@
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: student-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: LocalRootPass123!
+      MYSQL_DATABASE: student_db
+      MYSQL_USER: migration_user
+      MYSQL_PASSWORD: LocalMigrationPass123!
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  flyway:
+    image: redgate/flyway:latest
+    profiles: ["migration"]
+    volumes:
+      - ./sql:/flyway/sql
+
+volumes:
+  mysql_data:

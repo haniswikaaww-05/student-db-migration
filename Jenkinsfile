@@ -2,41 +2,34 @@
 pipeline {
     agent any
 
+    environment {
+        COMPOSE = 'C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\cli-plugins\\docker-compose.exe'
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        
-stage('Configure Docker PATH') {
-    steps {
-        script {
-            env.PATH = "C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;${env.PATH}"
-            env.DOCKER_CLI_PLUGIN_EXTRA_DIRS = "C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\cli-plugins"
+
+        stage('Check Docker') {
+            steps {
+                bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" --version'
+                bat '"%COMPOSE%" version'
+            }
         }
-    }
-}
-
-
-stage('Check Docker') {
-    steps {
-        bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" --version'
-        bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" compose version'
-    }
-}
-
 
         stage('Start MySQL') {
             steps {
-                bat 'docker compose up -d db'
+                bat '"%COMPOSE%" up -d db'
             }
         }
 
         stage('Run Flyway Migrations') {
             steps {
                 bat '''
-                docker compose --profile migration run --rm flyway -url="jdbc:mysql://db:3306/student_db?allowPublicKeyRetrieval=true&sslMode=DISABLED" -user=migration_user -password=LocalMigrationPass123! -locations=filesystem:/flyway/sql migrate
+                "%COMPOSE%" --profile migration run --rm flyway -url="jdbc:mysql://db:3306/student_db?allowPublicKeyRetrieval=true&sslMode=DISABLED" -user=migration_user -password=LocalMigrationPass123! -locations=filesystem:/flyway/sql migrate
                 '''
             }
         }
@@ -44,7 +37,7 @@ stage('Check Docker') {
         stage('Verify Migrations') {
             steps {
                 bat '''
-                docker compose --profile migration run --rm flyway -url="jdbc:mysql://db:3306/student_db?allowPublicKeyRetrieval=true&sslMode=DISABLED" -user=migration_user -password=LocalMigrationPass123! -locations=filesystem:/flyway/sql info
+                "%COMPOSE%" --profile migration run --rm flyway -url="jdbc:mysql://db:3306/student_db?allowPublicKeyRetrieval=true&sslMode=DISABLED" -user=migration_user -password=LocalMigrationPass123! -locations=filesystem:/flyway/sql info
                 '''
             }
         }

@@ -8,6 +8,15 @@ pipeline {
                 checkout scm
             }
         }
+        
+stage('Configure Docker PATH') {
+    steps {
+        script {
+            env.PATH = "C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;${env.PATH}"
+        }
+    }
+}
+
 
        
 stage('Check Docker') {

@@ -13,17 +13,19 @@ stage('Configure Docker PATH') {
     steps {
         script {
             env.PATH = "C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;${env.PATH}"
+            env.DOCKER_CLI_PLUGIN_EXTRA_DIRS = "C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\cli-plugins"
         }
     }
 }
 
 
-       
 stage('Check Docker') {
     steps {
         bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" --version'
+        bat '"C:\\Users\\USER\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" compose version'
     }
 }
+
 
         stage('Start MySQL') {
             steps {
